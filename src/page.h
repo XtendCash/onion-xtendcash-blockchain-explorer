@@ -9,7 +9,7 @@
 
 #include "mstch/mstch.hpp"
 
-#include "loki_headers.h"
+#include "xtend_headers.h"
 
 #include "../gen/version.h"
 
@@ -889,7 +889,7 @@ index2(uint64_t page_no = 0, bool refresh_page = false)
     {
         json j_info;
 
-        get_loki_network_info(j_info);
+        get_xtend_network_info(j_info);
 
         return j_info;
     });
@@ -1681,7 +1681,7 @@ show_block(uint64_t _blk_height)
     context["sum_fees"]
             = lokeg::lok_amount_to_str(sum_fees, "{:0.6f}", false);
 
-    // get loki in the block reward
+    // get xtend in the block reward
     context["blk_reward"]
             = lokeg::lok_amount_to_str(txd_coinbase.lok_outputs - sum_fees, "{:0.6f}");
 
@@ -1775,7 +1775,7 @@ show_service_node(const std::string &service_node_pubkey)
       uint64_t remaining_contribution = entry->staking_requirement - entry->total_reserved;
 
       snprintf(buf, sizeof(buf),
-          "This service node is awaiting to be registered and has: %s loki to be contributed remaining",
+          "This service node is awaiting to be registered and has: %s xtend to be contributed remaining",
           print_money(remaining_contribution).c_str());
 
       page_context[service_node_registered_text_id] = std::string(buf);
@@ -2546,7 +2546,7 @@ show_my_outputs(string tx_hash_str,
 
     if (lok_address_str.empty())
     {
-        return string("Loki address not provided!");
+        return string("xtend address not provided!");
     }
 
     if (viewkey_str.empty())
@@ -2566,13 +2566,13 @@ show_my_outputs(string tx_hash_str,
         return string("Cant get tx hash due to parse error: " + tx_hash_str);
     }
 
-    // parse string representing given loki address
+    // parse string representing given xtend address
     cryptonote::address_parse_info address_info;
 
     if (!lokeg::parse_str_address(lok_address_str,  address_info, nettype))
     {
         cerr << "Cant parse string address: " << lok_address_str << endl;
-        return string("Cant parse Loki address: " + lok_address_str);
+        return string("Cant parse xtend address: " + lok_address_str);
     }
 
     // parse string representing given private key
@@ -4046,7 +4046,7 @@ show_pushrawtx(string raw_tx_data, string action)
         ptx_vector.push_back({});
         ptx_vector.back().tx = parsed_tx;
     }
-    // if failed, treat raw_tx_data as base64 encoding of signed_loki_tx
+    // if failed, treat raw_tx_data as base64 encoding of signed_xtend_tx
     else
     {
         string decoded_raw_tx_data = epee::string_encoding::base64_decode(raw_tx_data);
@@ -4700,11 +4700,11 @@ search(string search_text)
     result_html = default_txt;
 
 
-    // check if loki address is given based on its length
+    // check if xtend address is given based on its length
     // if yes, then we can only show its public components
     if (search_str_length == 95)
     {
-        // parse string representing given loki address
+        // parse string representing given xtend address
         address_parse_info address_info;
 
         cryptonote::network_type nettype_addr {cryptonote::network_type::MAINNET};
@@ -4724,7 +4724,7 @@ search(string search_text)
         return show_address_details(address_info, nettype_addr);
     }
 
-    // check if integrated loki address is given based on its length
+    // check if integrated xtend address is given based on its length
     // if yes, then show its public components search tx based on encrypted id
     if (search_str_length == 106)
     {
@@ -5245,7 +5245,7 @@ json_rawtransaction(string tx_hash_str)
         }
     }
 
-    // get raw tx json as in loki
+    // get raw tx json as in xtend
 
     try
     {
@@ -5533,7 +5533,7 @@ json_rawblock(string block_no_or_hash)
         return j_response;
     }
 
-    // get raw tx json as in loki
+    // get raw tx json as in xtend
 
     try
     {
@@ -5877,7 +5877,7 @@ json_outputs(string tx_hash_str,
     if (address_str.empty())
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Loki address not provided";
+        j_response["message"] = "xtend address not provided";
         return j_response;
     }
 
@@ -5908,13 +5908,13 @@ json_outputs(string tx_hash_str,
         return j_response;
     }
 
-    // parse string representing given loki address
+    // parse string representing given xtend address
     address_parse_info address_info;
 
     if (!lokeg::parse_str_address(address_str,  address_info, nettype))
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Cant parse Loki address: " + address_str;
+        j_response["message"] = "Cant parse xtend address: " + address_str;
         return j_response;
 
     }
@@ -6102,7 +6102,7 @@ json_outputsblocks(string _limit,
     if (address_str.empty())
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Loki address not provided";
+        j_response["message"] = "xtend address not provided";
         return j_response;
     }
 
@@ -6113,13 +6113,13 @@ json_outputsblocks(string _limit,
         return j_response;
     }
 
-    // parse string representing given Loki address
+    // parse string representing given xtend address
     address_parse_info address_info;
 
     if (!lokeg::parse_str_address(address_str, address_info, nettype))
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Cant parse Loki address: " + address_str;
+        j_response["message"] = "Cant parse xtend address: " + address_str;
         return j_response;
 
     }
@@ -6265,10 +6265,10 @@ json_networkinfo()
     json j_info;
 
     // get basic network info
-    if (!get_loki_network_info(j_info))
+    if (!get_xtend_network_info(j_info))
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Cant get Loki network info";
+        j_response["message"] = "Cant get xtend network info";
         return j_response;
     }
 
@@ -6358,7 +6358,7 @@ json_version()
             {"last_git_commit_hash", string {GIT_COMMIT_HASH}},
             {"last_git_commit_date", string {GIT_COMMIT_DATETIME}},
             {"git_branch_name"     , string {GIT_BRANCH_NAME}},
-            {"loki_version_full"   , string {LOKI_VERSION_FULL}},
+            {"xtend_version_full"   , string {XTEND_VERSION_FULL}},
             {"api"                 , ONIONEXPLORER_RPC_VERSION},
             {"blockchain_height"   , core_storage->get_current_blockchain_height()}
     };
@@ -7442,7 +7442,7 @@ get_full_page(const string& middle)
 }
 
 bool
-get_loki_network_info(json& j_info)
+get_xtend_network_info(json& j_info)
 {
     MempoolStatus::network_info local_copy_network_info
         = MempoolStatus::current_network_info;
@@ -7538,7 +7538,7 @@ get_footer()
             {"last_git_commit_hash", string {GIT_COMMIT_HASH}},
             {"last_git_commit_date", string {GIT_COMMIT_DATETIME}},
             {"git_branch_name"     , string {GIT_BRANCH_NAME}},
-            {"loki_version_full"   , string {LOKI_VERSION_FULL}},
+            {"xtend_version_full"   , string {XTEND_VERSION_FULL}},
             {"api"                 , std::to_string(ONIONEXPLORER_RPC_VERSION_MAJOR)
                                      + "."
                                      + std::to_string(ONIONEXPLORER_RPC_VERSION_MINOR)},
