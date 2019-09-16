@@ -1208,12 +1208,22 @@ index2(uint64_t page_no = 0, bool refresh_page = false)
     // perapre network info mstch::map for the front page
     string hash_rate;
 
-    if (current_network_info.hash_rate > 1e6)
-        hash_rate = fmt::format("{:0.3f} MH/s", current_network_info.hash_rate/1.0e6);
-    else if (current_network_info.hash_rate > 1e3)
-        hash_rate = fmt::format("{:0.3f} kH/s", current_network_info.hash_rate/1.0e3);
-    else
-        hash_rate = fmt::format("{:d} H/s", current_network_info.hash_rate);
+    if(current_network_info.current_hf_version >= HF_VERSION_CUCKOO) {
+      if ((current_network_info.difficulty*32/15) > 1e6)
+          hash_rate = fmt::format("{:0.3f} Mgps", current_network_info.difficulty*32/15/1.0e6);
+      else if ((current_network_info.difficulty*32/15) > 1e3)
+          hash_rate = fmt::format("{:0.3f} kgps", current_network_info.difficulty*32/15/1.0e3);
+      else
+          hash_rate = fmt::format("{:d} gps", current_network_info.difficulty*32/15);
+    }
+    else{
+      if (current_network_info.hash_rate > 1e6)
+          hash_rate = fmt::format("{:0.3f} MH/s", current_network_info.hash_rate/1.0e6);
+      else if (current_network_info.hash_rate > 1e3)
+          hash_rate = fmt::format("{:0.3f} kH/s", current_network_info.hash_rate/1.0e3);
+      else
+          hash_rate = fmt::format("{:d} H/s", current_network_info.hash_rate);
+    }
 
     pair<string, string> network_info_age = get_age(local_copy_server_timestamp,
                                                     current_network_info.info_timestamp);
@@ -1599,6 +1609,10 @@ show_block(uint64_t _blk_height)
     // initalise page tempate map with basic info about blockchain
 
     string blk_pow_hash_str = pod_to_hex(get_block_longhash(blk, _blk_height));
+
+    string blk_cycle_str = pod_to_hex(blk.cycle);
+    for (int i = 0; i < 31; i++) blk_cycle_str.insert((31-i)*8, (i%16!=15)?" ":"\n");
+
     uint64_t blk_difficulty = core_storage->get_db().get_block_difficulty(_blk_height);
 
     mstch::map context {
@@ -1619,6 +1633,8 @@ show_block(uint64_t _blk_height)
             {"blk_age"              , age.first},
             {"delta_time"           , delta_time},
             {"blk_nonce"            , blk.nonce},
+            {"is_cuckcoo"           , (blk.major_version >= HF_VERSION_CUCKOO)},
+            {"blk_cycle"            , blk_cycle_str},
             {"blk_pow_hash"         , blk_pow_hash_str},
             {"blk_difficulty"       , blk_difficulty},
             {"age_format"           , age.second},
